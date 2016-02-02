@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="libext/kettle-core-5.4-SNAPSHOT.jar" sourcepath="D:/JAVA/jar包源码/kettle-core-5.4-SNAPSHOT-src.zip"/>
+	<classpathentry kind="lib" path="libext/kettle-dbdialog-5.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/kettle-engine-5.4-SNAPSHOT.jar" sourcepath="D:/JAVA/jar包源码/kettle-engine-5.4-SNAPSHOT-src.zip"/>
+	<classpathentry kind="lib" path="libext/kettle-ui-swt-5.4-SNAPSHOT.jar" sourcepath="D:/JAVA/jar包源码/kettle-ui-swt-5.4-SNAPSHOT-src.zip"/>
+	<classpathentry kind="lib" path="libswt/commands-3.3.0-I20070605-0010.jar"/>
+	<classpathentry kind="lib" path="libswt/common-3.3.0-v20070426.jar"/>
+	<classpathentry kind="lib" path="libswt/jface-3.3.0-I20070606-0010.jar"/>
+	<classpathentry kind="lib" path="libswt/runtime.jar"/>
+	<classpathentry kind="lib" path="libswt/swt.jar" sourcepath="D:/JAVA/jar包源码/swt-src.zip"/>
+	<classpathentry kind="lib" path="libext/metastore-5.2.0.0-209.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
