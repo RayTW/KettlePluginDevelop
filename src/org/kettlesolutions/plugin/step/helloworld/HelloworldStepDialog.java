@@ -42,6 +42,8 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	private TextVar wFieldname;
 	// 支持变量的文本输入框(值)
 	private TextVar wValuename;
+	// 支持变量的文本输入框(年龄增加值)
+	private TextVar wAgename;
 	
 	// 构造方法
 	public HelloworldStepDialog(Shell parent, Object baseStepMeta, TransMeta transMeta, String stepname) {
@@ -134,7 +136,26 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		fdValuename.top  = new FormAttachment(lastControl, margin);
 		fdValuename.right= new FormAttachment(100, 0);
 		wValuename.setLayoutData(fdValuename);
-		lastControl = wValuename;		
+		lastControl = wValuename;
+		
+		// ageAdd line
+		Label wlAgename = new Label(shell, SWT.RIGHT);
+		wlAgename.setText(BaseMessages.getString(PKG, "HelloworldDialog.Agename.Label")); //$NON-NLS-1$
+ 		props.setLook(wlAgename);
+		FormData fdlAgename = new FormData();
+		fdlAgename.left = new FormAttachment(0, 0);
+		fdlAgename.right= new FormAttachment(middle, -margin);
+		fdlAgename.top  = new FormAttachment(lastControl, margin);
+		wlAgename.setLayoutData(fdlAgename);
+		wAgename=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		props.setLook(wAgename);
+		wAgename.addModifyListener(lsMod);
+		FormData fdAgename = new FormData();
+		fdAgename.left = new FormAttachment(middle, 0);
+		fdAgename.top  = new FormAttachment(lastControl, margin);
+		fdAgename.right= new FormAttachment(100, 0);
+		wAgename.setLayoutData(fdAgename);
+		lastControl = wAgename;	
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -156,6 +177,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wStepname.addSelectionListener( lsDef );
 		wFieldname.addSelectionListener( lsDef );
 		wValuename.addSelectionListener( lsDef );
+		wAgename.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -185,6 +207,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wStepname.selectAll();
 		wFieldname.setText(Const.NVL(input.getFieldName(), ""));
 		wValuename.setText(Const.NVL(input.getValueName(), ""));
+		wAgename.setText(Const.NVL(input.getAgeName() , ""));
 	}
 	
 	private void cancel()
@@ -202,6 +225,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		
 		input.setFieldName(wFieldname.getText());
 		input.setValueName(wValuename.getText());
+		input.setAgeName(wAgename.getText());
 		
 		dispose();
 	}

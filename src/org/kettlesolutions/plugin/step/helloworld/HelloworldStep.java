@@ -43,14 +43,17 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 			first = false;
 			// 获取元数据
 			data.outputRowMeta = getInputRowMeta().clone();
-//			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 		}
 		
 		// 设置的值
-		String value = meta.getValueName();		
+		String value = meta.getValueName() + meta.getAgeName();
+		//增加年龄
+		long age = (long) row[2];
+	    row[2] = Long.parseLong(meta.getAgeName()) + age;
 		// 增加列的value值设置
 		Object[] outputRow = RowDataUtil.addValueData(row, getInputRowMeta().size(), value);
+		
 		// 将新的一列输出
 		putRow(data.outputRowMeta, outputRow);
 		

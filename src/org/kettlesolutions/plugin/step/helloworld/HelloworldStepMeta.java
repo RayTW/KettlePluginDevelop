@@ -50,39 +50,15 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 	private static Class<?> PKG = HelloworldStep.class; //for i18n
 	public enum Tag {
 		field_name,
-		value_name
+		value_name,
+		age_name
 	};
 	
+	// 定义私有域
 	private String fieldName;
 	private String valueName;
-	
-	/**
-	 * @return the fieldName
-	 */
-	public String getFieldName() {
-		return fieldName;
-	}
-
-	/**
-	 * @param fieldName the fieldName to set
-	 */
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
-	
-	/**
-	 * @return the valueName
-	 */
-	public String getValueName() {
-		return valueName;
-	}
-
-	/**
-	 * @param valueName the fieldName to set
-	 */
-	public void setValueName(String valueName) {
-		this.valueName = valueName;
-	}
+	private String ageName;
+		
 
 	/**
 	 * checks parameters, adds result to List<CheckResultInterface>
@@ -137,6 +113,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 			Map<String, Counter> sequenceCounters) throws KettleXMLException {
 		fieldName = XMLHandler.getTagValue(stepDomNode, Tag.field_name.name());
 		valueName = XMLHandler.getTagValue(stepDomNode, Tag.value_name.name());
+		ageName = XMLHandler.getTagValue(stepDomNode, Tag.age_name.name());
 	}
 	
 	/**
@@ -146,6 +123,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 		StringBuilder xml = new StringBuilder();
 		xml.append(XMLHandler.addTagValue(Tag.field_name.name(), fieldName));
 		xml.append(XMLHandler.addTagValue(Tag.value_name.name(), valueName));
+		xml.append(XMLHandler.addTagValue(Tag.age_name.name(), ageName));
 		return xml.toString();
 	}
 	
@@ -157,6 +135,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 			throws KettleException {
 		fieldName = repository.getStepAttributeString(stepIdInRepository, Tag.field_name.name());
 		valueName = repository.getStepAttributeString(stepIdInRepository, Tag.value_name.name());
+		setAgeName(repository.getStepAttributeString(stepIdInRepository, Tag.age_name.name()));
 	}
 
 	/**
@@ -166,6 +145,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 			throws KettleException {
 		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.field_name.name(), fieldName);
 		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.value_name.name(), valueName);
+		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.age_name.name(), ageName);
 	}
 	
 	
@@ -175,17 +155,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 	public void setDefault() {
 		fieldName = "FieldName";
 		valueName = "ValueName";
-	}
-	
-	// 该方法已被弃用
-	@Override
-	public void getFields(RowMetaInterface inputRowMeta, String name,
-			RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
-			throws KettleStepException {
-		String realFieldName = space.environmentSubstitute(fieldName);
-		ValueMetaInterface field = new ValueMeta(realFieldName, ValueMetaInterface.TYPE_STRING);
-		field.setOrigin(name);		
-		inputRowMeta.addValueMeta(field);
+		ageName = "10";
 	}
 	
 	// 添加一列
@@ -196,6 +166,43 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 		ValueMetaInterface field = new ValueMeta(realFieldName, ValueMetaInterface.TYPE_STRING);
 		field.setOrigin(name);		
 		inputRowMeta.addValueMeta(field);
+	}
+	
+	
+	/**
+	 * @return the fieldName
+	 */
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	/**
+	 * @param fieldName the fieldName to set
+	 */
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+	
+	/**
+	 * @return the valueName
+	 */
+	public String getValueName() {
+		return valueName;
+	}
+
+	/**
+	 * @param valueName the valueName to set
+	 */
+	public void setValueName(String valueName) {
+		this.valueName = valueName;
+	}
+
+	public String getAgeName() {
+		return ageName;
+	}
+
+	public void setAgeName(String ageName) {
+		this.ageName = ageName;
 	}
 
 }
