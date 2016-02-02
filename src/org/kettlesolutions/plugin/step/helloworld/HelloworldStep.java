@@ -1,7 +1,10 @@
 package org.kettlesolutions.plugin.step.helloworld;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -17,6 +20,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  *
  */
 public class HelloworldStep extends BaseStep implements StepInterface {
+
+	private StringBuffer sBuffer;
 
 	// 构造方法
 	public HelloworldStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -51,6 +56,15 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 		//增加年龄
 		long age = (long) row[2];
 	    row[2] = Long.parseLong(meta.getAgeName()) + age;
+	    
+	    List<ValueMetaInterface> metaList = data.outputRowMeta.getValueMetaList();
+	    
+	    sBuffer = new StringBuffer();
+	    for(ValueMetaInterface vmf : metaList) {
+	    	sBuffer.append(vmf.getName());
+	    }	    
+	    row[3] = sBuffer;
+	    
 		// 增加列的value值设置
 		Object[] outputRow = RowDataUtil.addValueData(row, getInputRowMeta().size(), value);
 		
