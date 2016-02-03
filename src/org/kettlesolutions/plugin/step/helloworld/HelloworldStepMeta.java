@@ -58,6 +58,8 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 	private String fieldName;
 	private String valueName;
 	private String ageName;
+	// 存储列名
+	private static String[] columns;
 		
 
 	/**
@@ -203,6 +205,14 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public void setAgeName(String ageName) {
 		this.ageName = ageName;
+	}
+
+	public static String[] getColumns() {
+		return columns;
+	}
+
+	public static void setColumns(String[] columns) {
+		HelloworldStepMeta.columns = columns;
 	}
 
 }

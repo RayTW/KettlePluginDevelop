@@ -1,6 +1,13 @@
 package org.kettlesolutions.plugin.step.helloworld;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,10 +26,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
@@ -42,8 +54,20 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	private TextVar wFieldname;
 	// 支持变量的文本输入框(值)
 	private TextVar wValuename;
+	
+	// 下拉列表(选择字段)
+	private CCombo wColumnname;
+	
 	// 支持变量的文本输入框(年龄增加值)
 	private TextVar wAgename;
+	// 列名列表
+	private Map<String, Integer> inputFields;
+	
+	private ColumnInfo[] colinf;
+	
+	private Label wlFields;
+	private TableView wFields;
+	private FormData fdlFields, fdFields;
 	
 	// 构造方法
 	public HelloworldStepDialog(Shell parent, Object baseStepMeta, TransMeta transMeta, String stepname) {
@@ -51,6 +75,8 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	    super( parent, (BaseStepMeta) baseStepMeta, transMeta, stepname );
 		// 获取元数据
 	    input = (HelloworldStepMeta) baseStepMeta;
+	    // map类初始化
+	    inputFields = new HashMap<String, Integer>();
 	}
 
 	public String open() {
@@ -138,6 +164,25 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wValuename.setLayoutData(fdValuename);
 		lastControl = wValuename;
 		
+		// select column
+		Label wlColumnname = new Label( shell, SWT.RIGHT );
+	    wlColumnname.setText( BaseMessages.getString( PKG, "HelloworldDialog.changeColumn.Label" ) );
+	    props.setLook( wlColumnname );
+	    FormData fdlColumnname = new FormData();
+	    fdlColumnname.left = new FormAttachment( 0, 0 );
+	    fdlColumnname.right = new FormAttachment( middle, -margin );
+	    fdlColumnname.top = new FormAttachment( lastControl, margin );
+	    wlColumnname.setLayoutData( fdlColumnname );
+	    wColumnname = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+	    wColumnname.setItems( getColumns() );
+	    props.setLook( wColumnname );
+	    FormData fdColumnname = new FormData();
+	    fdColumnname.left = new FormAttachment( middle, 0 );
+	    fdColumnname.top = new FormAttachment( lastControl, margin );
+	    fdColumnname.right = new FormAttachment( 100, 0 );
+	    wColumnname.setLayoutData( fdColumnname );
+	    lastControl = wColumnname;
+		
 		// ageAdd line
 		Label wlAgename = new Label(shell, SWT.RIGHT);
 		wlAgename.setText(BaseMessages.getString(PKG, "HelloworldDialog.Agename.Label")); //$NON-NLS-1$
@@ -163,8 +208,60 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, lastControl);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		
+	    // Table with fields
+	    wlFields = new Label( shell, SWT.NONE );
+	    wlFields.setText( BaseMessages.getString( PKG, "HelloworldDialog.changeColumn.Label" ) );
+	    props.setLook( wlFields );
+	    fdlFields = new FormData();
+	    fdlFields.left = new FormAttachment( 0, 0 );
+	    fdlFields.top = new FormAttachment( lastControl, margin );
+	    wlFields.setLayoutData( fdlFields );
+	    lastControl = wlFields;
 
+	    final int FieldsCols = 1;
+	    final int FieldsRows = 1;
+
+	    colinf = new ColumnInfo[FieldsCols];
+	    colinf[0] =
+	      new ColumnInfo(
+	        BaseMessages.getString( PKG, "HelloworldDialog.changeColumn.Label" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+	        new String[] { "" }, false );
+	    wFields =
+	      new TableView(
+	        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+
+	    fdFields = new FormData();
+	    fdFields.left = new FormAttachment( 0, 0 );
+	    fdFields.top = new FormAttachment( lastControl, margin );
+	    fdFields.right = new FormAttachment( 100, 0 );
+	    fdFields.bottom = new FormAttachment( wOK, -2 * margin );
+	    wFields.setLayoutData( fdFields );
+	    lastControl = wFields;
+		
+	    //
+	    // Search the fields in the background
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				StepMeta stepMeta = transMeta.findStep(stepname);
+				if (stepMeta != null) {
+					try {
+						RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+
+						// Remember these fields...
+						for (int i = 0; i < row.size(); i++) {
+							inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+						}
+						setComboBoxes();
+					} catch (KettleException e) {
+						logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+					}
+				}
+			}
+		};
+	    new Thread( runnable ).start();
+		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -178,6 +275,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wFieldname.addSelectionListener( lsDef );
 		wValuename.addSelectionListener( lsDef );
 		wAgename.addSelectionListener( lsDef );
+		wColumnname.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -217,17 +315,40 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		dispose();
 	}
 	
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
+	private void ok() {
+		if (Const.isEmpty(wStepname.getText()))
+			return;
 
 		stepname = wStepname.getText(); // return value
-		
+
 		input.setFieldName(wFieldname.getText());
 		input.setValueName(wValuename.getText());
 		input.setAgeName(wAgename.getText());
-		
+
 		dispose();
+	}
+
+	protected void setComboBoxes() {
+		// Something was changed in the row.
+		//
+		final Map<String, Integer> fields = new HashMap<String, Integer>();
+
+		// Add the currentMeta fields...
+		fields.putAll(inputFields);
+
+		Set<String> keySet = fields.keySet();
+		List<String> entries = new ArrayList<String>(keySet);
+
+		String[] fieldNames = entries.toArray(new String[entries.size()]);
+
+		Const.sortStrings(fieldNames);
+		colinf[0].setComboValues(fieldNames);
+	}
+	
+	private String[] getColumns(){
+		String[] columns = null;
+		
+		return columns;
 	}
 
 }

@@ -21,7 +21,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class HelloworldStep extends BaseStep implements StepInterface {
 
-	private StringBuffer sBuffer;
+	private String[] columns;
 
 	// 构造方法
 	public HelloworldStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
@@ -49,6 +49,15 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 			// 获取元数据
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
+			
+			// 列名组设置到meta中
+			List<ValueMetaInterface> metaList = data.outputRowMeta.getValueMetaList();
+			columns = null;
+			int i = 0;
+			for(ValueMetaInterface vmf : metaList) {
+		    	columns[i++] = vmf.getName();
+		    }
+			HelloworldStepMeta.setColumns(columns);			
 		}
 		
 		// 设置的值
@@ -56,14 +65,6 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 		//增加年龄
 		long age = (long) row[2];
 	    row[2] = Long.parseLong(meta.getAgeName()) + age;
-	    
-	    List<ValueMetaInterface> metaList = data.outputRowMeta.getValueMetaList();
-	    
-	    sBuffer = new StringBuffer();
-	    for(ValueMetaInterface vmf : metaList) {
-	    	sBuffer.append(vmf.getName());
-	    }	    
-	    row[3] = sBuffer;
 	    
 		// 增加列的value值设置
 		Object[] outputRow = RowDataUtil.addValueData(row, getInputRowMeta().size(), value);
