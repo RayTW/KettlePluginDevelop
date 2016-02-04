@@ -164,7 +164,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wValuename.setLayoutData(fdValuename);
 		lastControl = wValuename;
 		
-		// select column
+		// 选择列的下拉列表
 		Label wlColumnname = new Label( shell, SWT.RIGHT );
 	    wlColumnname.setText( BaseMessages.getString( PKG, "HelloworldDialog.changeColumn.Label" ) );
 	    props.setLook( wlColumnname );
@@ -349,6 +349,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		colinf[0].setComboValues(fieldNames);
 	}
 	
+	// 获取更改列名的下拉列表
 	private String[] getColumns(){
 		StepMeta stepMeta = transMeta.findStep(stepname);
 		if (stepMeta != null) {
