@@ -21,12 +21,27 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class HelloworldStep extends BaseStep implements StepInterface {
 
-	private String[] columns;
+	// 列明组集合
+	List<ValueMetaInterface> metaList;
+	// 选择列类型
+	private int columnType;
+	// 选择列角标
+	private int columnIndex;
+	// long类型处理变量
+	private long columnLong;
+	// string类型处理变量
+	private String columnString;
 
 	// 构造方法
 	public HelloworldStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
 			Trans trans) {
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+		
+		// 初始化
+		columnIndex = 0;
+		columnType = 0;
+		columnLong = 0;
+		columnString = null;
 	}
 	
 	// 步骤主要数据处理方法
@@ -50,21 +65,38 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, repository, metaStore);
 			
-			// 列名组设置到meta中
-			List<ValueMetaInterface> metaList = data.outputRowMeta.getValueMetaList();
-			columns = new String[metaList.size()];
-			int i = 0;
+			// 列名组设置到metaList中
+			metaList = data.outputRowMeta.getValueMetaList();
 			for(ValueMetaInterface vmf : metaList) {
-		    	columns[i++] = vmf.getName();
+		    	if(vmf.getName().equals(meta.getColumnName())) {
+		    		// 获取选择列的类型
+		    		columnType = vmf.getType();
+		    		break;
+		    	}
+		    	columnIndex++;
 		    }
-			HelloworldStepMeta.setColumns(columns);			
 		}
 		
-		// 设置的值
-		String value = meta.getValueName() + meta.getAgeName();
-		//增加年龄
-		long age = (long) row[2];
-	    row[2] = Long.parseLong(meta.getAgeName()) + age;
+		// 设置增加列的值
+		String value = meta.getValueName();
+
+		// 判断该列的类型
+		switch (columnType) {
+		case ValueMetaInterface.TYPE_INTEGER:
+			columnLong = (long) row[columnIndex];
+		    row[columnIndex] = Long.parseLong(meta.getColumnValue()) + columnLong;
+			break;
+
+		case ValueMetaInterface.TYPE_STRING:
+			columnString = (String) row[columnIndex];
+		    row[columnIndex] = columnString +meta.getColumnValue();
+			break;
+		case ValueMetaInterface.TYPE_NUMBER:
+
+			break;
+		default:
+			break;
+		}
 	    
 		// 增加列的value值设置
 		Object[] outputRow = RowDataUtil.addValueData(row, getInputRowMeta().size(), value);

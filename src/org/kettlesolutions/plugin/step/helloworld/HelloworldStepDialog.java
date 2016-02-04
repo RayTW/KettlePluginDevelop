@@ -307,7 +307,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wStepname.selectAll();
 		wFieldname.setText(Const.NVL(input.getFieldName(), ""));
 		wValuename.setText(Const.NVL(input.getValueName(), ""));
-		wAgename.setText(Const.NVL(input.getAgeName() , ""));
+		wAgename.setText(Const.NVL(input.getColumnValue() , ""));
 		wColumnname.setText(Const.NVL(input.getColumnName(), ""));
 	}
 	
@@ -326,7 +326,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 
 		input.setFieldName(wFieldname.getText());
 		input.setValueName(wValuename.getText());
-		input.setAgeName(wAgename.getText());
+		input.setColumnValue(wAgename.getText());
 		input.setColumnName(wColumnname.getText());
 
 		dispose();
