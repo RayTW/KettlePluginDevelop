@@ -51,13 +51,15 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 	public enum Tag {
 		field_name,
 		value_name,
-		age_name
+		age_name,
+		column_name
 	};
 	
 	// 定义私有域
 	private String fieldName;
 	private String valueName;
 	private String ageName;
+	private String columnName;
 	// 存储列名
 	private static String[] columns;
 		
@@ -116,6 +118,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 		fieldName = XMLHandler.getTagValue(stepDomNode, Tag.field_name.name());
 		valueName = XMLHandler.getTagValue(stepDomNode, Tag.value_name.name());
 		ageName = XMLHandler.getTagValue(stepDomNode, Tag.age_name.name());
+		columnName = XMLHandler.getTagValue(stepDomNode, Tag.column_name.name());
 	}
 	
 	/**
@@ -126,6 +129,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 		xml.append(XMLHandler.addTagValue(Tag.field_name.name(), fieldName));
 		xml.append(XMLHandler.addTagValue(Tag.value_name.name(), valueName));
 		xml.append(XMLHandler.addTagValue(Tag.age_name.name(), ageName));
+		xml.append(XMLHandler.addTagValue(Tag.column_name.name(), columnName));
 		return xml.toString();
 	}
 	
@@ -137,7 +141,8 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 			throws KettleException {
 		fieldName = repository.getStepAttributeString(stepIdInRepository, Tag.field_name.name());
 		valueName = repository.getStepAttributeString(stepIdInRepository, Tag.value_name.name());
-		setAgeName(repository.getStepAttributeString(stepIdInRepository, Tag.age_name.name()));
+		ageName = repository.getStepAttributeString(stepIdInRepository, Tag.age_name.name());
+		columnName = repository.getStepAttributeString(stepIdInRepository, Tag.column_name.name());
 	}
 
 	/**
@@ -148,6 +153,7 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.field_name.name(), fieldName);
 		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.value_name.name(), valueName);
 		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.age_name.name(), ageName);
+		repository.saveStepAttribute(idOfTransformation, idOfStep, Tag.column_name.name(), columnName);
 	}
 	
 	
@@ -213,6 +219,14 @@ public class HelloworldStepMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public static void setColumns(String[] columns) {
 		HelloworldStepMeta.columns = columns;
+	}
+
+	public String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
 	}
 
 }

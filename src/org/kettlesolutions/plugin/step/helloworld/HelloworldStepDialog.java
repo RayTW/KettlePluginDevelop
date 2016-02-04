@@ -61,9 +61,9 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	// 支持变量的文本输入框(年龄增加值)
 	private TextVar wAgename;
 	// 列名列表
-	private Map<String, Integer> inputFields;
-	
+	private Map<String, Integer> inputFields;	
 	private ColumnInfo[] colinf;
+	private String[] columns;
 	
 	private Label wlFields;
 	private TableView wFields;
@@ -247,10 +247,12 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 				StepMeta stepMeta = transMeta.findStep(stepname);
 				if (stepMeta != null) {
 					try {
+						// 获取列集合
 						RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
 
 						// Remember these fields...
 						for (int i = 0; i < row.size(); i++) {
+							// 获取列名存入map
 							inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
 						}
 						setComboBoxes();
@@ -306,6 +308,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		wFieldname.setText(Const.NVL(input.getFieldName(), ""));
 		wValuename.setText(Const.NVL(input.getValueName(), ""));
 		wAgename.setText(Const.NVL(input.getAgeName() , ""));
+		wColumnname.setText(Const.NVL(input.getColumnName(), ""));
 	}
 	
 	private void cancel()
@@ -324,6 +327,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 		input.setFieldName(wFieldname.getText());
 		input.setValueName(wValuename.getText());
 		input.setAgeName(wAgename.getText());
+		input.setColumnName(wColumnname.getText());
 
 		dispose();
 	}
@@ -346,8 +350,20 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	}
 	
 	private String[] getColumns(){
-		String[] columns = null;
-		
+		StepMeta stepMeta = transMeta.findStep(stepname);
+		if (stepMeta != null) {
+			try {
+				// 获取列集合
+				RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+				columns = new String[row.size()];
+				for (int i = 0; i < row.size(); i++) {
+					// 获取列名存入数组
+					columns[i] = row.getValueMeta(i).getName();
+				}
+			} catch (KettleException e) {
+				logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+			}
+		}
 		return columns;
 	}
 

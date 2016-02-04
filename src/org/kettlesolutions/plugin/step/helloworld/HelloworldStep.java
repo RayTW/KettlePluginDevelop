@@ -52,7 +52,7 @@ public class HelloworldStep extends BaseStep implements StepInterface {
 			
 			// 列名组设置到meta中
 			List<ValueMetaInterface> metaList = data.outputRowMeta.getValueMetaList();
-			columns = null;
+			columns = new String[metaList.size()];
 			int i = 0;
 			for(ValueMetaInterface vmf : metaList) {
 		    	columns[i++] = vmf.getName();
