@@ -176,6 +176,7 @@ public class HelloworldStepDialog extends BaseStepDialog implements StepDialogIn
 	    wColumnname = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
 	    wColumnname.setItems( getColumns() );
 	    props.setLook( wColumnname );
+	    wColumnname.addModifyListener(lsMod);
 	    FormData fdColumnname = new FormData();
 	    fdColumnname.left = new FormAttachment( middle, 0 );
 	    fdColumnname.top = new FormAttachment( lastControl, margin );
